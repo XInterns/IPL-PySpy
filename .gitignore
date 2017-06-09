@@ -101,7 +101,7 @@ ENV/
 .mypy_cache/
 
 #User Ignores
-references/
-references/**/
-metastore_db/
-metastore_db/**/
+/**/references/
+/**/references/**/
+/**/metastore_db/
+/**/metastore_db/**/
