@@ -1,5 +1,5 @@
 # **IPL-PySpy**
-![banner](https://user-images.githubusercontent.com/15742618/26876542-5121aeb0-4ba4-11e7-9f58-4b663bf0f485.png)
+![banner](https://user-images.githubusercontent.com/15742618/27032120-e55acbd0-4f90-11e7-8811-f8aa3d15b5aa.png)
 
 An internship project that provides various insights, analysis, and predictions for [IPL](http://www.iplt20.com/)(Indian Premier League) using pyspark, and python visualization libraries.
 
@@ -20,7 +20,10 @@ An internship project that provides various insights, analysis, and predictions 
 * [Kishan Chawla](https://github.com/kris0107)
 
 ## Dataset Sources
-* [Kaggle IPL Dataset](https://www.kaggle.com/manasgarg/ipl) 
+* [Kaggle IPL Dataset](https://www.kaggle.com/manasgarg/ipl)
 
+## Track Progress
+  [Trello](https://trello.com/b/QMZOeUpb/pyspy)
+  
 ## License
 #### MIT

@@ -105,3 +105,4 @@ ENV/
 /**/references/**/
 /**/metastore_db/
 /**/metastore_db/**/
+/**/.~lock.*
