@@ -106,3 +106,4 @@ ENV/
 /**/metastore_db/
 /**/metastore_db/**/
 /**/.~lock.*
+/**/.ipynb_checkpoints
