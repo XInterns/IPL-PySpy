@@ -109,3 +109,61 @@ def consistency_jsonify(srcDF, season_lbound = 2008, season_ubound = 2016):
     result_DF = calc_consistency(result_DF)
 
     return toJsonObj(result_DF)
+
+
+
+########### Team Vs Team Win Percentage Module ###########
+def get_winnerDF(srcDF):
+    return srcDF.select(srcDF.team1,srcDF.team2,srcDF.winner)
+
+def jsonify_Percents(team1, team2, team1_percent, team2_percent):
+    json_obj = []
+    
+    entry1 = {}
+    entry1['team1']=team1
+    entry1['win_percent']=team1_percent
+
+    entry2 = {}
+    entry2['team1']=team2
+    entry2['win_percent']=team2_percent
+
+    json_obj.append(entry1)
+    json_obj.append(entry2)
+    return json_obj
+
+def team_vs_team_jsonify(srcDF, team1, team2):
+    if team1 == team2:                          #check whether the two teams selected are same or not.
+        return "SAME TEAM"
+    else:
+        winnerDF = get_winnerDF(srcDF)
+
+        team1_= winnerDF.filter(winnerDF.team1 == team1)
+        team11_ = winnerDF.filter(winnerDF.team2 == team1)
+        team2_= team1_.filter(team1_.team2 == team2)
+        team22_ = team11_.filter(team11_.team1 == team2)
+        
+        winners1_ = team2_.filter(team2_.winner == team1)#checking the matches won by the team1
+        winners11_ = team22_.filter(team22_.winner == team1)
+        winners2_ = team2_.filter(team2_.winner == team2)  #checking the matches won by the team2
+        winners22_ = team22_.filter(team22_.winner == team2)
+        
+        
+        #number of matches won by first team
+        team1_win = winners1_.count() 
+        team1_win2 = winners11_.count()
+         
+        #number of matches won by second team
+        team2_win = winners2_.count()
+        team2_win2 = winners22_.count()        
+        
+        total_matches = team22_.count() + team2_.count() #taking the count of total number of matches
+        
+        if team1_win+team2_win+team1_win2+team2_win2 != total_matches:    #checking for any matches without any result
+            total_matches = total_matches - (total_matches -(team1_win + team2_win + team1_win2 + team2_win2))  #calculating new total matches played with significant result
+        
+        if total_matches == 0:  #checking if the teams ever played a match between each other
+            return "NO MATCHES PLAYED BEFORE" 
+        else:
+            team1_percent = ((team1_win + team1_win2) * 100)/float(total_matches) #calculating the percentage win for first team
+            team2_percent = ((team2_win + team2_win2) * 100)/float(total_matches) #calculating the percentage win for second team
+            return jsonify_Percents(team1, team2, team1_percent, team2_percent)

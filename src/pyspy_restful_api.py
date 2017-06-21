@@ -9,7 +9,8 @@ def test():
 	return ''' <h1>Welcome!</h1></br>
 	<b>Modules directory:</b></br>
 	<a href="/overallstandings/help">Team Overall Standings</a></br>
-	<a href="/consistency/help">Team Performance Consistency</a></br>'''
+	<a href="/consistency/help">Team Performance Consistency</a></br>
+	<a href="/TeamVsTeamWinPercentage/help">Team V/S Team Win Percentage</a></br>'''
 
 @app.route("/overallstandings/help", methods=["GET"])
 def returnOverallStandingsHelp():
@@ -25,6 +26,28 @@ def returnPerformanceConsistenciesHelp():
 	<b>usage:</b> /consistency?lbound=2010&ubound=2013</br>
 	<b>range:</b> 2008-2016</br>'''
 
+@app.route("/TeamVsTeamWinPercentage/help", methods=["GET"])
+def returnTeamVsTeamWinPercentageHelp():
+	return ''' <h1>**** Team V/S Team Win Percentage ****</h1></br>
+	<b>about:</b> returns json data of win percentages of given teams against each other</br>
+	<b>usage:</b> /TeamVsTeamWinPercentage?team1=Chennai+Super+Kings&team2=Delhi+Daredevils</br>
+	<b>teams:</b></br>
+	<ul>
+		<li>Rajasthan Royals</li>
+		<li>Chennai Super Kings</li>
+		<li>Deccan Chargers</li>
+		<li>Gujarat Lions</li>
+		<li>Delhi Daredevils</li>
+		<li>Mumbai Indians</li>
+		<li>Kochi Tuskers Kerala</li>
+		<li>Royal Challengers Bangalore</li>
+		<li>Pune Warriors</li>
+		<li>Rising Pune Supergiants</li>
+		<li>Sunrisers Hyderabad</li>
+		<li>Kolkata Knight Riders</li>
+		<li>Kings XI Punjab</li>
+	</ul>'''
+
 @app.route("/overallstandings", methods=["GET"])
 def returnOverallStandings():
 	args = request.args
@@ -38,6 +61,12 @@ def returnPerformanceConsistencies():
 	ubound = int(args['ubound'])
 	return jsonify({"Performance_Consistency_"+str(lbound)+"_to_"+str(ubound): consistency_jsonify(mdf, lbound, ubound)})
 
+@app.route("/TeamVsTeamWinPercentage", methods=["GET"])
+def returnTeamVsTeamWinPercentage():
+	args = request.args
+	team1 = args['team1']
+	team2 = args['team2']
+	return jsonify({"Team_Vs_Team_Win_Percentage_"+team1+"_VS_"+team2: team_vs_team_jsonify(mdf, team1, team2)})
+
 if __name__ == "__main__":
 	app.run(port=5000)
-	
