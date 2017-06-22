@@ -11,8 +11,8 @@ from dateutil.parser import parse       # for string parse to date
 sc = SparkContext("local","jsonifyApp")
 sql = SQLContext(sc)
 
-data_path = "../input/csv/"                                # path directory to input csv files
-data_opath = "../output/csv/"                               # path directory to output csv files
+data_path = "../../input/csv/"                                # path directory to input csv files
+data_opath = "../../output/csv/"                               # path directory to output csv files
 
 
 
