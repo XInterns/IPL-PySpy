@@ -8,6 +8,13 @@ import ast                              # for evaluating and converting to a dic
 from datetime import *                  # for datetime datatype for schema
 from dateutil.parser import parse       # for string parse to date
 
+#importing types and functions for converting string type to integer type. udf is an user defined function
+
+from pyspark.sql.types import IntegerType
+from pyspark.sql.functions import udf
+
+
+
 sc = SparkContext("local","jsonifyApp")
 sql = SQLContext(sc)
 
@@ -167,3 +174,109 @@ def team_vs_team_jsonify(srcDF, team1, team2):
             team1_percent = ((team1_win + team1_win2) * 100)/float(total_matches) #calculating the percentage win for first team
             team2_percent = ((team2_win + team2_win2) * 100)/float(total_matches) #calculating the percentage win for second team
             return jsonify_Percents(team1, team2, team1_percent, team2_percent)
+
+########### Player Performance Module ###########
+def get_fieldDF():
+    sql = SQLContext(sc)
+    field = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath + "fielder.csv"))
+
+    return field
+
+def get_batDF():
+    sql = SQLContext(sc)
+    bat = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath + "batsman.csv"))
+
+    return bat
+
+def get_bowlDF():
+    sql = SQLContext(sc)
+    bowl = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath + "bowler.csv"))
+
+    return bowl
+
+
+def jsonify_Ratings(player,bat,bowl,field):
+    json_obj = []
+    
+    entry = {}
+    entry['Player']=player
+    entry['batting']=bat
+    entry['bowling']=bowl
+    entry['fielding']=field
+
+    json_obj.append(entry)
+    return json_obj
+
+
+
+def Player_Performance_jsonify(player):
+
+    batc = get_batDF()
+    bowlc = get_bowlDF()
+    fieldc = get_fieldDF()
+
+    field_max_overall = int(fieldc.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])
+
+    #droping the duplicate rows having fielder, overall and ratings common.
+
+    field2 = fieldc.dropDuplicates(['fielder','overall','ratings'])
+
+    #calcuating the overall ratings of every fielder relative to the maximum
+
+    fielder_ratings = field2.withColumn('ratings_overall', (fieldc.overall / field_max_overall*100)).sort("overall",ascending=0)
+
+    #toIntfunc is a function which converts the values to integer.
+
+    toIntfunc = udf(lambda x: int(x),IntegerType())
+
+    #converting the column "overall" to integer.
+
+    bat2 = batc.withColumn("overall",toIntfunc(batc['overall']))
+
+    #computing the batsman's overall maximum
+
+    bat_max_overall = int (bat2.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])
+
+    #calcuating the overall ratings of every batsman relative to the maximum
+
+    batsman_ratings = bat2.withColumn('ratings_overall', (bat2.overall / bat_max_overall*100)).sort("overall",ascending=0)
+
+    #converting the column "overall" to integer.
+
+    bowl2 = bowlc.withColumn("overall",toIntfunc(bowlc['overall']))
+
+    #computing the bowler's overall maximum
+
+    bowl_max_overall = int (bowl2.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])
+
+    #calcuating the overall ratings of every bowler relative to the maximum
+
+    bowler_ratings = bowl2.withColumn('ratings_overall', (bowl2.overall / bowl_max_overall*100)).sort("overall",ascending=0)
+
+    #converting the new overall ratings to integer.
+
+    bowler_ratings2 = bowler_ratings.withColumn("ratings_overall",toIntfunc(bowler_ratings['ratings_overall']))
+    fielder_ratings2 = fielder_ratings.withColumn("ratings_overall",toIntfunc(fielder_ratings['ratings_overall']))
+    batsman_ratings2 = batsman_ratings.withColumn("ratings_overall",toIntfunc(batsman_ratings['ratings_overall']))
+
+
+    batsman_name = batsman_ratings2.filter(batsman_ratings2.batsman == player)
+    bowler_name = bowler_ratings2.filter(bowler_ratings2.bowler == player)
+    fielder_name = fielder_ratings2.filter(fielder_ratings2.fielder == player)
+
+    if batsman_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0] is None:
+        bat = 10
+    else:
+        bat = int(batsman_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0])
+        
+    if bowler_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0] is None:
+        bowl = 5
+    else:
+        bowl = int(bowler_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0])
+        
+    if fielder_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0] is None:
+        field = 25
+    else:
+        field = int(fielder_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0])
+    
+    return jsonify_Ratings(player,bat,bowl,field)
