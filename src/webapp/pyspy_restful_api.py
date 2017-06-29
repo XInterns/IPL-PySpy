@@ -25,7 +25,7 @@ def returnOverallStandingsHelp():
 def returnPerformanceConsistenciesHelp():
 	return ''' <h1>**** Team Performance Consistency ****</h1></br>
 	<b>about:</b> returns json data of performance consistencies for each team</br>
-	<b>usage:</b> /consistency?lbound=2010&ubound=2013</br>
+	<b>usage:</b> /consistency?lbound=2009&ubound=2012</br>
 	<b>range:</b> 2008-2016</br>'''
 
 @app.route("/TeamVsTeamWinPercentage/help", methods=["GET"])

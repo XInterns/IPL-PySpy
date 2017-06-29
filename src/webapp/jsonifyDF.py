@@ -13,19 +13,15 @@ from dateutil.parser import parse       # for string parse to date
 from pyspark.sql.types import IntegerType
 from pyspark.sql.functions import udf
 
-
-
-sc = SparkContext("local","jsonifyApp")
+sc = SparkContext("local","webapp")
 sql = SQLContext(sc)
 
-data_path = "../../input/csv/"                                # path directory to input csv files
-data_opath = "../../output/csv/"                               # path directory to output csv files
-
-
+data_path = "input/csv/"                                # path directory to input csv files
+data_opath = "output/csv/"                              # path directory to output csv files
 
 ########### Common Modules ###########
 def getMatchDF():
-	match_rdd = sc.textFile(data_path + "matches.csv")         # reading csv files into RDD
+	match_rdd = sc.textFile(data_path + "matches.csv")        # reading csv files into RDD
 
 	match_header = match_rdd.filter(lambda l: "id,season" in l)     # storing the header tuple
 	match_no_header = match_rdd.subtract(match_header)              # subtracting it from RDD
@@ -37,6 +33,7 @@ def getMatchDF():
 	match_df = sql.createDataFrame(match_temp_rdd, match_rdd.first().split(','))  # converting to PysparkDF
 	match_df = match_df.orderBy(match_df.id.asc())                                # asc sort by id
 	return match_df
+
 
 def toJsonObj(srcDF):
     json_obj = []
@@ -58,6 +55,7 @@ def get_overall_ranks_df(season_num, srcDF):
     overall_ranking = overall_ranking.filter("winner != '' ")                          # Deleting records of tied matches
     overall_ranking = overall_ranking.selectExpr("winner as Team", "count as Wins")   # Renaming columns
     return overall_ranking
+
 
 def overall_rank_jsonify(srcDF, season_num):
     result_DF = get_overall_ranks_df(season_num, srcDF)
@@ -123,6 +121,7 @@ def consistency_jsonify(srcDF, season_lbound = 2008, season_ubound = 2016):
 def get_winnerDF(srcDF):
     return srcDF.select(srcDF.team1,srcDF.team2,srcDF.winner)
 
+
 def jsonify_Percents(team1, team2, team1_percent, team2_percent):
     json_obj = []
     
@@ -137,6 +136,7 @@ def jsonify_Percents(team1, team2, team1_percent, team2_percent):
     json_obj.append(entry1)
     json_obj.append(entry2)
     return json_obj
+
 
 def team_vs_team_jsonify(srcDF, team1, team2):
     if team1 == team2:                          #check whether the two teams selected are same or not.
@@ -175,23 +175,21 @@ def team_vs_team_jsonify(srcDF, team1, team2):
             team2_percent = ((team2_win + team2_win2) * 100)/float(total_matches) #calculating the percentage win for second team
             return jsonify_Percents(team1, team2, team1_percent, team2_percent)
 
+
+
 ########### Player Performance Module ###########
 def get_fieldDF():
-    sql = SQLContext(sc)
     field = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath + "fielder.csv"))
-
     return field
 
-def get_batDF():
-    sql = SQLContext(sc)
-    bat = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath + "batsman.csv"))
 
+def get_batDF():
+    bat = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath + "batsman.csv"))
     return bat
 
-def get_bowlDF():
-    sql = SQLContext(sc)
-    bowl = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath + "bowler.csv"))
 
+def get_bowlDF():
+    bowl = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath + "bowler.csv"))
     return bowl
 
 
@@ -206,7 +204,6 @@ def jsonify_Ratings(player,bat,bowl,field):
 
     json_obj.append(entry)
     return json_obj
-
 
 
 def Player_Performance_jsonify(player):
@@ -280,3 +277,4 @@ def Player_Performance_jsonify(player):
         field = int(fielder_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0])
     
     return jsonify_Ratings(player,bat,bowl,field)
+
