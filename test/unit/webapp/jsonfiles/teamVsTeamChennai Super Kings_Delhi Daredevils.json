@@ -1,0 +1,12 @@
+{
+  "Team_Vs_Team_Win_Percentage_Chennai Super Kings_VS_Delhi Daredevils": [
+    {
+      "team1": "Chennai Super Kings", 
+      "win_percent": 68.75
+    }, 
+    {
+      "team1": "Delhi Daredevils", 
+      "win_percent": 31.25
+    }
+  ]
+}

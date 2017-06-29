@@ -1,0 +1,36 @@
+{
+  "Overall_Standings_2015": [
+    {
+      "Team": "Chennai Super Kings", 
+      "Wins": 10
+    }, 
+    {
+      "Team": "Mumbai Indians", 
+      "Wins": 10
+    }, 
+    {
+      "Team": "Royal Challengers Bangalore", 
+      "Wins": 8
+    }, 
+    {
+      "Team": "Sunrisers Hyderabad", 
+      "Wins": 7
+    }, 
+    {
+      "Team": "Rajasthan Royals", 
+      "Wins": 7
+    }, 
+    {
+      "Team": "Kolkata Knight Riders", 
+      "Wins": 7
+    }, 
+    {
+      "Team": "Delhi Daredevils", 
+      "Wins": 5
+    }, 
+    {
+      "Team": "Kings XI Punjab", 
+      "Wins": 3
+    }
+  ]
+}

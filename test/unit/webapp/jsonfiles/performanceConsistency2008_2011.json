@@ -1,0 +1,36 @@
+{
+  "Performance_Consistency_2008_to_2011": [
+    {
+      "Consistency": 89.10275264114831, 
+      "Teams": "Chennai Super Kings"
+    }, 
+    {
+      "Consistency": 81.2917130661303, 
+      "Teams": "Kolkata Knight Riders"
+    }, 
+    {
+      "Consistency": 78.78679656440359, 
+      "Teams": "Delhi Daredevils"
+    }, 
+    {
+      "Consistency": 78.78679656440359, 
+      "Teams": "Kings XI Punjab"
+    }, 
+    {
+      "Consistency": 77.22391605213926, 
+      "Teams": "Royal Challengers Bangalore"
+    }, 
+    {
+      "Consistency": 76.15151996457635, 
+      "Teams": "Mumbai Indians"
+    }, 
+    {
+      "Consistency": 73.19048676309097, 
+      "Teams": "Deccan Chargers"
+    }, 
+    {
+      "Consistency": 69.68911086754466, 
+      "Teams": "Rajasthan Royals"
+    }
+  ]
+}

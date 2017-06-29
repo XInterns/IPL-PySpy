@@ -1,0 +1,36 @@
+{
+  "Overall_Standings_2016": [
+    {
+      "Team": "Sunrisers Hyderabad", 
+      "Wins": 11
+    }, 
+    {
+      "Team": "Gujarat Lions", 
+      "Wins": 9
+    }, 
+    {
+      "Team": "Royal Challengers Bangalore", 
+      "Wins": 9
+    }, 
+    {
+      "Team": "Kolkata Knight Riders", 
+      "Wins": 8
+    }, 
+    {
+      "Team": "Delhi Daredevils", 
+      "Wins": 7
+    }, 
+    {
+      "Team": "Mumbai Indians", 
+      "Wins": 7
+    }, 
+    {
+      "Team": "Rising Pune Supergiants", 
+      "Wins": 5
+    }, 
+    {
+      "Team": "Kings XI Punjab", 
+      "Wins": 4
+    }
+  ]
+}

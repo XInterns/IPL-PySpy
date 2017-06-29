@@ -1,0 +1,36 @@
+{
+  "Overall_Standings_2010": [
+    {
+      "Team": "Mumbai Indians", 
+      "Wins": 11
+    }, 
+    {
+      "Team": "Chennai Super Kings", 
+      "Wins": 9
+    }, 
+    {
+      "Team": "Deccan Chargers", 
+      "Wins": 8
+    }, 
+    {
+      "Team": "Royal Challengers Bangalore", 
+      "Wins": 8
+    }, 
+    {
+      "Team": "Kolkata Knight Riders", 
+      "Wins": 7
+    }, 
+    {
+      "Team": "Delhi Daredevils", 
+      "Wins": 7
+    }, 
+    {
+      "Team": "Rajasthan Royals", 
+      "Wins": 6
+    }, 
+    {
+      "Team": "Kings XI Punjab", 
+      "Wins": 4
+    }
+  ]
+}

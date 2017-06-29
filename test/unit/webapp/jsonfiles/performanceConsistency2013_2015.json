@@ -1,0 +1,36 @@
+{
+  "Performance_Consistency_2013_to_2015": [
+    {
+      "Consistency": 90.57190958417938, 
+      "Teams": "Chennai Super Kings"
+    }, 
+    {
+      "Consistency": 87.52780871075355, 
+      "Teams": "Delhi Daredevils"
+    }, 
+    {
+      "Consistency": 83.00326828802405, 
+      "Teams": "Royal Challengers Bangalore"
+    }, 
+    {
+      "Consistency": 83.00326828802405, 
+      "Teams": "Sunrisers Hyderabad"
+    }, 
+    {
+      "Consistency": 81.14381916835873, 
+      "Teams": "Rajasthan Royals"
+    }, 
+    {
+      "Consistency": 78.39753100530713, 
+      "Teams": "Kolkata Knight Riders"
+    }, 
+    {
+      "Consistency": 75.50510257216823, 
+      "Teams": "Mumbai Indians"
+    }, 
+    {
+      "Consistency": 63.18212994270913, 
+      "Teams": "Kings XI Punjab"
+    }
+  ]
+}

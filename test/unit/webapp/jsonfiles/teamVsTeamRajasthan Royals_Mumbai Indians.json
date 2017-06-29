@@ -1,0 +1,12 @@
+{
+  "Team_Vs_Team_Win_Percentage_Rajasthan Royals_VS_Mumbai Indians": [
+    {
+      "team1": "Rajasthan Royals", 
+      "win_percent": 37.5
+    }, 
+    {
+      "team1": "Mumbai Indians", 
+      "win_percent": 62.5
+    }
+  ]
+}
