@@ -103,7 +103,7 @@ def index():
 		
 	# Embed plot into HTML via Flask Render
 	script, div = components(plot)
-	return render_template("overallranks.html", script=script, div=div, seasonList=seasonList, season=season)
+	return render_template("overallRanks.html", script=script, div=div, seasonList=seasonList, season=season)
 
 # With debug=True, Flask server will auto-reload 
 # when there are code changes
