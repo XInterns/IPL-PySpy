@@ -1,0 +1,36 @@
+<html>
+<head>
+<link
+    href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.css"
+    rel="stylesheet" type="text/css">
+<link
+    href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.css"
+    rel="stylesheet" type="text/css">
+
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.js"></script>
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.js"></script>
+
+</head>
+<body>
+<H1>Season Overview</H1>
+
+<form action="/">
+<select name="season">
+	{% for cseason in seasonList %}
+		{% if cseason == season %}
+			<option selected value="{{ cseason }}">{{ cseason }}</option> 
+		{% else %} 
+			<option value="{{ cseason }}">{{ cseason }}</option> 
+		{% endif %}
+	{% endfor %}
+</select>
+<input type="submit" value="Get Season Overview">
+</form>
+
+{{ script|safe }}
+{{ div|safe }}
+
+</body>
+</html>
+
+
