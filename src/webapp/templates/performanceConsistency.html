@@ -1,0 +1,45 @@
+<html>
+<head>
+<link
+    href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.css"
+    rel="stylesheet" type="text/css">
+<link
+    href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.css"
+    rel="stylesheet" type="text/css">
+
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.js"></script>
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.js"></script>
+
+</head>
+<body>
+<H1>Team Performance Consistency</H1>
+
+<form action="/">
+<select name="lbound">
+	{% for clbound in lboundList %}
+		{% if clbound == lbound %}
+			<option selected value="{{ clbound }}">{{ clbound }}</option> 
+		{% else %} 
+			<option value="{{ clbound }}">{{ clbound }}</option> 
+		{% endif %}
+	{% endfor %}
+</select>
+<select name="ubound">
+	{% for cubound in uboundList %}
+		{% if cubound == ubound %}
+			<option selected value="{{ cubound }}">{{ cubound }}</option> 
+		{% else %} 
+			<option value="{{ cubound }}">{{ cubound }}</option> 
+		{% endif %}
+	{% endfor %}
+</select>
+<input type="submit" value="Calc Performance Consistency">
+</form>
+
+{{ script|safe }}
+{{ div|safe }}
+
+</body>
+</html>
+
+
