@@ -10,8 +10,9 @@ An internship project that provides various insights, and analysis, through visu
 * [Flask 0.12.2](https://pypi.python.org/pypi/Flask/0.12.2)
 
 ## How to run
-* Execute pyspy_restful_api.py
-* Access URL for further usage instructions: http://localhost:5000/
+* Execute run.sh
+* Choose desired operation (RunWebServer or UnitTesting)
+* Access WebServer URL for further usage instructions (default: http://localhost:5000/)
 
 ## Screenshots
 * TO-DO
