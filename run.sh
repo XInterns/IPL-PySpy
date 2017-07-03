@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function runWebApp
+function runWebServer
 {
    python src/webapp/pyspyWebServer.py
 }
@@ -10,10 +10,10 @@ function unitTests
   nosetests
 }
 
-OPTIONS="RunWebApp UnitTesting Exit"
+OPTIONS="RunWebServer UnitTesting Exit"
 select opt in $OPTIONS; do
- if [ "$opt" = "RunWebApp" ]; then
-  runWebApp
+ if [ "$opt" = "RunWebServer" ]; then
+  runWebServer
   exit
 elif [ "$opt" = "UnitTesting" ]; then
   unitTests
