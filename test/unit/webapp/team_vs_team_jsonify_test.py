@@ -1,4 +1,4 @@
-from src.webapp.corefuncs import getMatchDF, team_vs_team_jsonify
+from src.webapp.corefuncs import get_match_df, team_vs_team_jsonify
 import unittest
 import json
 
@@ -15,7 +15,7 @@ class TestTeamVsTeamJsonify(unittest.TestCase):
         with open("test/unit/webapp/jsonfiles/teamVsTeam"+self.team1+"_"+self.team2+".json") as json_data:
             self.expectedJsonObj  = json.load(json_data)
         
-        dummyDF = getMatchDF()
+        dummyDF = get_match_df()
         self.outputJsonObj = json.loads(json.dumps\
             ({"Team_Vs_Team_Win_Percentage_"+self.team1+"_VS_"+self.team2:\
                 team_vs_team_jsonify(dummyDF, self.team1, self.team2)}))

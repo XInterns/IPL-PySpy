@@ -1,4 +1,4 @@
-from src.webapp.corefuncs import getMatchDF, consistency_jsonify
+from src.webapp.corefuncs import get_match_df, consistency_jsonify
 import unittest
 import json
 
@@ -14,7 +14,7 @@ class TestConsistencyJsonify(unittest.TestCase):
         with open("test/unit/webapp/jsonfiles/performanceConsistency"+self.seasonStart+"_"+self.seasonEnd+".json") as json_data:
             self.expectedJsonObj = json.load(json_data)
         
-        self.dummyDF = getMatchDF()
+        self.dummyDF = get_match_df()
         self.outputJsonObj = json.loads(json.dumps\
             ({"Performance_Consistency_"+self.seasonStart+"_to_"+self.seasonEnd:\
             consistency_jsonify(self.dummyDF, self.seasonStart, self.seasonEnd)}))

@@ -1,4 +1,4 @@
-from src.webapp.corefuncs import getMatchDF, overall_rank_jsonify
+from src.webapp.corefuncs import get_match_df, overall_rank_jsonify
 import unittest
 import json
 
@@ -14,7 +14,7 @@ class TestOverallRankJsonify(unittest.TestCase):
         with open("test/unit/webapp/jsonfiles/overallStandings"+self.season+".json") as json_data:
             self.expectedJsonObj = json.load(json_data)
 
-        self.dummyDF = getMatchDF()
+        self.dummyDF = get_match_df()
         self.outputJsonObj = json.loads(json.dumps\
             ({"Overall_Standings_"+self.season:\
              overall_rank_jsonify(self.dummyDF, self.season)}))
