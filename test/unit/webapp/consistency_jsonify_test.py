@@ -1,4 +1,4 @@
-from src.webapp.jsonifyDF import sc, sql, getMatchDF, consistency_jsonify
+from src.webapp.corefuncs import getMatchDF, consistency_jsonify
 import unittest
 import json
 

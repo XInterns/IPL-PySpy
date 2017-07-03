@@ -1,4 +1,4 @@
-from src.webapp.jsonifyDF import sc, sql, Player_Performance_jsonify
+from src.webapp.corefuncs import Player_Performance_jsonify
 import unittest
 import json
 

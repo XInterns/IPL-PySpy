@@ -1,4 +1,4 @@
-from src.webapp.jsonifyDF import sc, sql, getMatchDF, overall_rank_jsonify
+from src.webapp.corefuncs import getMatchDF, overall_rank_jsonify
 import unittest
 import json
 

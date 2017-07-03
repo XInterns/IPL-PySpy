@@ -1,4 +1,5 @@
-from jsonifyDF import *
+from src.webapp.sparkInit import sc, sql
+from src.webapp.jsonifyDF import *
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)

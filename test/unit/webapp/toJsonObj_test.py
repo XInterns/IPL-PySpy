@@ -1,4 +1,5 @@
-from src.webapp.jsonifyDF import toJsonObj, sc, sql
+from src.webapp.pyspyInit import *
+from src.webapp.jsonifyDF import toJsonObj
 import unittest
 import json
 
