@@ -19,12 +19,6 @@ from bokeh.palettes import *
 from bokeh.plotting import figure, show, output_file,curdoc
 
 app = Flask(__name__)
-sc = SparkContext()
-sql = SQLContext(sc)
-
-data_path = "input/csv/"                                # path directory to input csv files
-data_opath = "output/csv/"                              # path directory to output csv files
-
 
 ########### Common Module ###########
 def getMatchDF():
@@ -129,9 +123,9 @@ def create_figure_performance_consistency(srcDF, season_lbound = 2008, season_ub
     figurePerformanceConsistency.y_range = Range1d(60,100)
     return figurePerformanceConsistency
 
-mdf = getMatchDF()
-lboundList = getDropDownList(mdf,"season",1,"int")
-uboundList = getDropDownList(mdf,"season",1,"int")
+mdf = get_match_df()
+lboundList = get_dropdown_list(mdf,"season",1,"int")
+uboundList = get_dropdown_list(mdf,"season",1,"int")
 
 # Index page
 @app.route('/')

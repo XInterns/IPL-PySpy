@@ -1,0 +1,45 @@
+<html>
+<head>
+<link
+    href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.css"
+    rel="stylesheet" type="text/css">
+<link
+    href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.css"
+    rel="stylesheet" type="text/css">
+
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.js"></script>
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.js"></script>
+
+<style>
+img.resize 
+{
+    max-width:50%;
+    max-height:50%;
+}
+</style>
+
+</head>
+<body>
+<center><h1><strong>IPL-PySpy</strong></h1></center>
+<div style="text-align: center">
+    <img class ="resize" src="{{url_for('static', filename='Banner.png')}}" alt="Banner"/>
+</div>
+
+<center><h1>Welcome!</h1></center></br>
+<p>An internship project that provides various insights, and analysis, through visualizations for <a href="http://www.iplt20.com/">IPL</a>(Indian Premier League) using pyspark, flask, and bokeh.</p>
+<ul>
+    <li><b>RESTful API Modules directory: </b></li>
+    <li><a href="/overallStandings/help">Team Overall Standings</a></li>
+    <li><a href="/performanceConsistency/help">Team Performance Consistency</a></li>
+    <li><a href="/TeamVsTeamWinPercentage/help">Team V/S Team Win Percentage</a></li>
+    <li><a href="/PlayerPerformance/help">Player Performance</a></li>
+</ul>
+<ul>
+    <li><b>Interactive WebApps directory: </b></li>
+    <li><a href="/PlayerPerformance/webapp"> Player Performance</a></li>
+    <li><a href="/overallStandings/webapp">Overall Standings</a></li>
+    <li><a href="/performanceConsistency/webapp">Performance Consistency</a></li>
+    <li><a href="/seasonOverview/webapp">Season Overview</a></li>
+</ul>
+</body>
+</html>

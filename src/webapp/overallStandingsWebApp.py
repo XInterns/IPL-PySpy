@@ -1,27 +1,12 @@
+from src.webapp.corefuncs import *
 from flask import Flask, render_template, request
-from bokeh.embed import components
 
-import pyspark                      
-from pyspark import SparkContext 
-from pyspark.sql import SQLContext
-import pyspark.sql.functions as func    # for ETL, data processing on Dataframes
-
-import pandas as pd                     # converting PysparkDF to PandasDF when passing it as a parameter to Bokeh invokes 
-
-from datetime import *                  # for datetime datatype for schema
-from dateutil.parser import parse       # for string parse to date
-
-from bokeh.charts import Bar, output_file, show            # creating bar charts, and displaying it
+from bokeh.charts import Bar            # creating bar charts, and displaying it
 from bokeh.charts.attributes import cat                    # extracting column for 'label' category in bar charts
-from bokeh.io import output_file, show
+from bokeh.embed import components
 from bokeh.palettes import *                               # brewer color palette
-from bokeh.plotting import figure, show, output_file,curdoc
 
 app = Flask(__name__)
-
-data_path = "input/csv/"                                # path directory to input csv files
-data_opath = "output/csv/"                              # path directory to output csv files
-
 
 ########### Common Module ###########
 def getMatchDF():
@@ -36,6 +21,7 @@ def getMatchDF():
     match_df = match_df.orderBy(match_df.id.asc())                                # asc sort by id
     return match_df
 
+
 def dTypeCast(data, dtype):
 	if dtype == "int":
 		return int(data)
@@ -47,6 +33,7 @@ def dTypeCast(data, dtype):
 		return parse(data).date()
 	else:
 		print dtype
+
 
 def get_color_list(paletteName,numRows):
     return all_palettes[paletteName][numRows]
@@ -83,8 +70,8 @@ def create_figure_overall_ranks(srcDF, season_num):
                     legend='top_right', plot_width=950, bar_width=0.6)   # generating bar chart
     return figureOverallRanks
 
-mdf = getMatchDF()
-seasonList = getDropDownList(mdf,"season",1,"int")
+mdf = get_match_df()
+seasonList = get_dropdown_list(mdf,"season",1,"int")
 
 # Index page
 @app.route('/')

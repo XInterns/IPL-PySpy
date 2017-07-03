@@ -1,70 +1,15 @@
 from flask import Flask, render_template, request
-from bokeh.embed import components
+from src.webapp.corefuncs import *
 
-import pyspark                      
-from pyspark import SparkContext 
-from pyspark.sql import SQLContext
-import pyspark.sql.functions as func    # for ETL, data processing on Dataframes
-
-import pandas as pd                     # converting PysparkDF to PandasDF when passing it as a parameter to Bokeh invokes 
-
-from datetime import *                  # for datetime datatype for schema
-from dateutil.parser import parse       # for string parse to date
-
-from bokeh.charts import output_file, show                    # creating bar charts, and displaying it
 from bokeh.charts.attributes import cat                            # extracting column for 'label' category in bar charts
 from bokeh.core.properties import field
-from bokeh.io import push_notebook, show, output_notebook          # various output methods for jupyter notebook
+from bokeh.embed import components
 from bokeh.models import Legend, LegendItem, HoverTool, ColumnDataSource       # for hover feature, and columnDS
 from bokeh.models.glyphs import Rect
 from bokeh.palettes import *                                       # brewer color palette
 from bokeh.plotting import figure                                  # creating a figure variable
 
 app = Flask(__name__)
-sc = SparkContext()
-sql = SQLContext(sc)
-
-data_path = "input/csv/"                                # path directory to input csv files
-data_opath = "output/csv/"                              # path directory to output csv files
-
-
-########### Common Module ###########
-def get_match_df():
-    match_rdd = sc.textFile(data_path + "matches.csv")        # reading csv files into RDD
-    match_header = match_rdd.filter(lambda l: "id,season" in l)     # storing the header tuple
-    match_no_header = match_rdd.subtract(match_header)              # subtracting it from RDD
-    match_temp_rdd = match_no_header.map(lambda k: k.split(','))\
-    .map(lambda p: (int(p[0]), p[1],p[2],parse(p[3]).date(),p[4]\
-                    ,p[5],p[6],p[7],p[8],p[9]=='1',p[10],int(p[11])\
-                    ,int(p[12]),p[13],p[14],p[15],p[16],p[17]))     # Transforming csv file data
-    match_df = sql.createDataFrame(match_temp_rdd, match_rdd.first().split(','))  # converting to PysparkDF
-    match_df = match_df.orderBy(match_df.id.asc())                                # asc sort by id
-    return match_df
-
-def dtype_cast(data, dtype):
-	if dtype == "int":
-		return int(data)
-	elif dtype == "str":
-		return str(data)
-	elif dtype == "long":
-		return long(data)
-	elif dtype == "date":
-		return parse(data).date()
-	else:
-		print dtype
-
-def get_color_list(paletteName,numRows):
-    return all_palettes[paletteName][numRows]
-
-
-def get_dropdown_list(srcDF, attr, sort_req, dtype):
-    attrDF = srcDF.select(attr).distinct()
-    
-    if sort_req:
-        attrDF = attrDF.orderBy(attr)
-        
-    attrRange = attrDF.rdd.map(lambda x: dtype_cast(x[0],dtype)).collect()
-    return attrRange
 
 ########### Season Overview Module ###########
 def get_clean_range(tmp_list, sort_req):              # for sanitizing fields
@@ -183,7 +128,7 @@ mdf = get_match_df()
 seasonList = get_dropdown_list(mdf,"season",1,"int")
 
 # Index page
-@app.route('/')
+@app.route('/seasonOverview/webapp')
 def index():
     # Determine the selected feature
     season = request.args.get("season")

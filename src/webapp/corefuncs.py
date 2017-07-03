@@ -7,16 +7,10 @@ from pyspark.sql.functions import udf
 import ast                              # for evaluating and converting to a dict
 from datetime import *                  # for datetime datatype for schema
 from dateutil.parser import parse       # for string parse to date
-
-from bokeh.charts import Bar, output_file, show            # creating bar charts, and displaying it
-from bokeh.charts.attributes import cat                    # extracting column for 'label' category in bar charts
-from bokeh.io import output_file, show
-from bokeh.palettes import *                               # brewer color palette
-from bokeh.plotting import figure, show, output_file,curdoc
-
+from bokeh.palettes import *                                       # brewer color palette
 
 ########### Common Modules ###########
-def getMatchDF():
+def get_match_df():
     match_rdd = sc.textFile(data_path + "matches.csv")        # reading csv files into RDD
 
     match_header = match_rdd.filter(lambda l: "id,season" in l)     # storing the header tuple
@@ -30,6 +24,30 @@ def getMatchDF():
     match_df = match_df.orderBy(match_df.id.asc())                                # asc sort by id
     return match_df
 
+def dtype_cast(data, dtype):
+    if dtype == "int":
+        return int(data)
+    elif dtype == "str":
+        return str(data)
+    elif dtype == "long":
+        return long(data)
+    elif dtype == "date":
+        return parse(data).date()
+    else:
+        print dtype
+
+def get_color_list(paletteName,numRows):
+    return all_palettes[paletteName][numRows]
+
+
+def get_dropdown_list(srcDF, attr, sort_req, dtype):
+    attrDF = srcDF.select(attr).distinct()
+    
+    if sort_req:
+        attrDF = attrDF.orderBy(attr)
+        
+    attr_range = attrDF.rdd.map(lambda x: dtype_cast(x[0],dtype)).collect()
+    return attr_range
 
 ########### Overall Standings Module ###########
 def get_overall_ranks_df(season_num, srcDF):
