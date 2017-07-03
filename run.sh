@@ -2,7 +2,7 @@
 
 function runWebApp
 {
-   python src/webapp/pyspy_restful_api.py
+   python src/webapp/pyspyWebServer.py
 }
 
 function unitTests
