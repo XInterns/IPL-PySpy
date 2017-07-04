@@ -1,13 +1,14 @@
 # **IPL-PySpy**
 ![banner](https://user-images.githubusercontent.com/15742618/27032120-e55acbd0-4f90-11e7-8811-f8aa3d15b5aa.png)
 
-An internship project that provides various insights, and analysis, through visualizations for [IPL](http://www.iplt20.com/)(Indian Premier League) using Pyspark, Flask, and Bokeh.
+An internship project that provides various insights, and analysis, through visualizations for [IPL](http://www.iplt20.com/)(Indian Premier League) using Pyspark, Flask, Bokeh, and Pygal.
 
 ## Pre-requisites
 * [Python 2.7](https://www.python.org/download/releases/2.7/)
 * [Pyspark 2.1.1](https://spark.apache.org/downloads.html)
 * [Bokeh 0.12.5](http://bokeh.pydata.org/en/latest/)
 * [Flask 0.12.2](https://pypi.python.org/pypi/Flask/0.12.2)
+* [Pygal 2.3.1](http://pygal.org/en/stable/installing.html)
 
 ## How to run
 * Execute run.sh
