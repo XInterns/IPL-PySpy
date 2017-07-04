@@ -123,7 +123,6 @@ def returnPerformanceConsistencyWebApp():
     # Determine the selected feature
     lbound = request.args.get("lbound")
     ubound = request.args.get("ubound")
-    print "here"
     
     if lbound == None:
        lbound = 2009
