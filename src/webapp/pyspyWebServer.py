@@ -2,14 +2,16 @@ from flask import Flask, jsonify, request
 from src.webapp.webapps import *
 
 app = Flask(__name__)
-mdf = get_match_df()
+matchDF = get_match_df()
+playerPerformanceObj = PlayerPerformance()
 
 
 ########### DropDown Lists ###########
-seasonList = get_dropdown_list(mdf,"season",1,"int")
-lboundList = get_dropdown_list(mdf,"season",1,"int")
-uboundList = get_dropdown_list(mdf,"season",1,"int")
-player_names = get_fielder_ratings2().rdd.map(lambda x: str(x[1])).collect()
+seasonList = get_dropdown_list(matchDF,"season",1,"int")
+lboundList = get_dropdown_list(matchDF,"season",1,"int")
+uboundList = get_dropdown_list(matchDF,"season",1,"int")
+player_names = playerPerformanceObj.getPlayerNames()
+
 
 ########### Index Page ###########
 @app.route("/", methods=["GET"])
@@ -40,7 +42,7 @@ def returnPlayerPerformanceHelp():
 def returnOverallStandings():
 	args = request.args
 	season = args['season']
-	return jsonify({"Overall_Standings_"+season: overall_rank_jsonify(mdf, season)})
+	return jsonify({"Overall_Standings_"+season: overall_rank_jsonify(matchDF, season)})
 
 
 @app.route("/performanceConsistency", methods=["GET"])
@@ -48,7 +50,7 @@ def returnPerformanceConsistencies():
 	args = request.args
 	lbound = int(args['lbound'])
 	ubound = int(args['ubound'])
-	return jsonify({"Performance_Consistency_"+str(lbound)+"_to_"+str(ubound): consistency_jsonify(mdf, lbound, ubound)})
+	return jsonify({"Performance_Consistency_"+str(lbound)+"_to_"+str(ubound): consistency_jsonify(matchDF, lbound, ubound)})
 
 
 @app.route("/TeamVsTeamWinPercentage", methods=["GET"])
@@ -56,7 +58,7 @@ def returnTeamVsTeamWinPercentage():
 	args = request.args
 	team1 = args['team1']
 	team2 = args['team2']
-	return jsonify({"Team_Vs_Team_Win_Percentage_"+team1+"_VS_"+team2: team_vs_team_jsonify(mdf, team1, team2)})
+	return jsonify({"Team_Vs_Team_Win_Percentage_"+team1+"_VS_"+team2: team_vs_team_jsonify(matchDF, team1, team2)})
 
 
 @app.route("/PlayerPerformance", methods=["GET"])
@@ -65,21 +67,23 @@ def returnPlayerPerformance():
 	player = args['player']
 	return jsonify({"Player_Performance_"+player: Player_Performance_jsonify(player)})
 
-
 ########### WebApp Routing & Functionality ###########
 @app.route("/PlayerPerformance/webapp")
 def returnPlayerPerformApp():
     # Determine the selected feature
-    player= request.args.get("player")
-    if player == None:
-        player = "V Kohli"
+    player1 = request.args.get("player1")
+    if player1 == None:
+        player1 = "V Kohli"
+
+    player2 = request.args.get("player2")
+    if player2 == None:
+        player2 = "Average"
 
     # Create the plot
-    plot = create_figure_player_performance(player)
+    plot = playerPerformanceObj.create_figure_player_performance(player1, player2)
         
     # Embed plot into HTML via Flask Render
-    
-    return render_template("playerperformance.html",plot=plot,player_names=player_names,player=player)
+    return render_template("playerperformance.html", plot=plot, player_names=player_names, player1=player1, player2=player2)
 
 
 @app.route("/seasonOverview/webapp")
@@ -92,7 +96,7 @@ def returnSeasonOverviewWebApp():
         season = int(season)
 
     # Create the plot
-    plot = create_figure_season_overview(mdf, season)
+    plot = create_figure_season_overview(matchDF, season)
     
     # Embed plot into HTML via Flask Render
     script, div = components(plot)
@@ -110,7 +114,7 @@ def returnOverallStandingsWebApp():
         season = int(season)
 
     # Create the plot
-    plot = create_figure_overall_ranks(mdf, season)
+    plot = create_figure_overall_ranks(matchDF, season)
         
     # Embed plot into HTML via Flask Render
     script, div = components(plot)
@@ -139,7 +143,7 @@ def returnPerformanceConsistencyWebApp():
         lbound^=ubound
 
     # Create the plot
-    plot = create_figure_performance_consistency(mdf, lbound, ubound)
+    plot = create_figure_performance_consistency(matchDF, lbound, ubound)
 
     # Embed plot into HTML via Flask Render
     script, div = components(plot)
@@ -150,4 +154,4 @@ def returnPerformanceConsistencyWebApp():
 
 
 if __name__ == "__main__":
-	app.run(port=5000, debug=True)
+	app.run(port=5000)

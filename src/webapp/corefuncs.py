@@ -46,7 +46,7 @@ def get_dropdown_list(srcDF, attr, sort_req, dtype):
     if sort_req:
         attrDF = attrDF.orderBy(attr)
         
-    attr_range = attrDF.rdd.map(lambda x: dtype_cast(x[0],dtype)).collect()
+    attr_range = [dtype_cast(i[0], dtype) for i in attrDF.collect()]
     return attr_range
 
 ########### Overall Standings Module ###########

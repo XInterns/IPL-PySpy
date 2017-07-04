@@ -4,12 +4,21 @@
 <H1>Player Performance</H1>
 
 <form action="/PlayerPerformance/webapp">
-<select name="player">
-    {% for cplayer in player_names %}
-        {% if cplayer == player %}
-            <option selected value="{{ cplayer }}">{{ cplayer }}</option> 
+<select name="player1">
+    {% for cplayer1 in player_names %}
+        {% if cplayer1 == player1 %}
+            <option selected value="{{ cplayer1 }}">{{ cplayer1 }}</option> 
         {% else %} 
-            <option value="{{ cplayer }}">{{ cplayer }}</option> 
+            <option value="{{ cplayer1 }}">{{ cplayer1 }}</option> 
+        {% endif %}
+    {% endfor %}
+</select>
+<select name="player2">
+    {% for cplayer2 in player_names %}
+        {% if cplayer2 == player2 %}
+            <option selected value="{{ cplayer2 }}">{{ cplayer2 }}</option> 
+        {% else %} 
+            <option value="{{ cplayer2 }}">{{ cplayer2 }}</option> 
         {% endif %}
     {% endfor %}
 </select>

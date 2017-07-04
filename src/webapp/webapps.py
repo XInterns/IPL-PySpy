@@ -37,7 +37,7 @@ def get_range(srcDF, seasonNum, attr, distinct_req, sort_req):  # geting a list 
     if sort_req:
         attrDF = attrDF.orderBy(attr)
         
-    attrRange = attrDF.rdd.map(lambda x: str(x[0])).collect()
+    attrRange = [str(i[0]) for i in attrDF.collect()]
     return attrRange
 
 
@@ -98,28 +98,14 @@ def create_figure_season_overview(srcDF, seasonNum):                      # prim
 
     src = ColumnDataSource(                             # Defines column data source to be utilized for visualization                       
         data=dict(                                      # using Bokeh libraries
-            dates = [str(x) for x in get_range\
-                     (srcDF, seasonNum,"date",0,0)],
-            venues = [str(x) for x in get_clean_range\
-                      (get_range(srcDF, seasonNum,"venue",0,0), 0)],
+            dates = get_range(srcDF, seasonNum,"date",0,0),
+            venues = get_clean_range(get_range(srcDF, seasonNum,"venue",0,0), 0),
             cities = get_range(srcDF, seasonNum,"city",0,0),
             team1 = get_range(srcDF, seasonNum,"team1",0,0),
             team2 = get_range(srcDF, seasonNum,"team2",0,0),
-            toss_winner = get_range\
-            (srcDF, seasonNum,"toss_winner",0,0),
-            toss_decision = get_range\
-            (srcDF, seasonNum,"toss_decision",0,0),
-            result = get_range(srcDF, seasonNum,"result",0,0),
             winners = get_range(srcDF, seasonNum,"winner",0,0),
-            win_by_runs = get_range\
-            (srcDF, seasonNum,"win_by_runs",0,0),
-            win_by_wickets = get_range\
-            (srcDF, seasonNum,"win_by_wickets",0,0),
             player_of_match = get_range\
             (srcDF, seasonNum,"player_of_match",0,0),
-            umpire1 = get_range(srcDF, seasonNum,"umpire1",0,0),
-            umpire2 = get_range(srcDF, seasonNum,"umpire2",0,0),
-            umpire3 = get_range(srcDF, seasonNum,"umpire3",0,0),        
             type_color=[colorMap[x] for x in \
                         get_range(srcDF, seasonNum,"winner",0,0)],
             label = [x if x!="" else "Tie" for x in get_range(srcDF, seasonNum,"winner",0,0)]
@@ -217,101 +203,80 @@ def create_figure_performance_consistency(srcDF, season_lbound = 2008, season_ub
 
 
 ########### PlayerPerformance Module ###########
-def get_fielder_ratings2():
-    fieldDF = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath+"fielder.csv"))          #computing the fielder's overall maximum
-    toIntfunc = udf(lambda x: int(x),IntegerType())                                                                         #converting the column "overall" to integer.
-    field_max_overall = int (fieldDF.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])      #droping the duplicate rows having fielder, overall and ratings common.
-    field2 = fieldDF.dropDuplicates(['fielder','overall','ratings'])                                                          #calcuating the overall ratings of every fielder relative to the maximum
-    fielder_ratings = field2.withColumn('ratings_overall', (fieldDF.overall / field_max_overall*100)).sort("overall",ascending=0) #reading the batsman.csv file
-    fielder_ratings2 = fielder_ratings.withColumn("ratings_overall",toIntfunc(fielder_ratings['ratings_overall']))
-    return fielder_ratings2
+class PlayerPerformance(object):
+    """PlayerPerformance module class"""
+    def __init__(self):
+        self.fieldDF = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath+"fielder.csv"))          #computing the fielder's overall maximum
+        self.field_max_overall = int (self.fieldDF.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])      #droping the duplicate rows having fielder, overall and ratings common.
+        self.field2 = self.fieldDF.dropDuplicates(['fielder','overall','ratings'])                                                          #calcuating the overall ratings of every fielder relative to the maximum
+        self.fielder_ratings = self.field2.withColumn('ratings_overall', (self.fieldDF.overall / self.field_max_overall*100)).sort("overall",ascending=0) #reading the batsman.csv file
+        self.bat = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath+"batsman.csv"))            #toIntfunc is a function which converts the values to integer.
+        self.toIntfunc = udf(lambda x: int(x),IntegerType())                                                                         #converting the column "overall" to integer.
+        self.bat2 = self.bat.withColumn("overall",self.toIntfunc(self.bat['overall']))                                                              #computing the batsman's overall maximum
+        self.bat_max_overall = int (self.bat2.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])         #calcuating the overall ratings of every batsman relative to the maximum
+        self.batsman_ratings = self.bat2.withColumn('ratings_overall', (self.bat2.overall / self.bat_max_overall*100)).sort("overall",ascending=0)  #reading the bowler.csv file
+        self.bowl = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath+"bowler.csv"))            #converting the column "overall" to integer.
+        self.bowl2 = self.bowl.withColumn("overall",self.toIntfunc(self.bowl['overall']))                                                           #computing the bowler's overall maximum
+        self.bowl_max_overall = int (self.bowl2.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])       #calcuating the overall ratings of every bowler relative to the maximum
+        self.bowler_ratings = self.bowl2.withColumn('ratings_overall', (self.bowl2.overall / self.bowl_max_overall*100)).sort("overall",ascending=0)#converting the new overall ratings to integer.
+        self.bowler_ratings2 = self.bowler_ratings.withColumn("ratings_overall",self.toIntfunc(self.bowler_ratings['ratings_overall']))
+        self.fielder_ratings2 = self.fielder_ratings.withColumn("ratings_overall",self.toIntfunc(self.fielder_ratings['ratings_overall']))
+        self.batsman_ratings2 = self.batsman_ratings.withColumn("ratings_overall",self.toIntfunc(self.batsman_ratings['ratings_overall']))
+        self.bat_avg = round(self.batsman_ratings2.agg(func.avg(func.col('ratings_overall'))).collect()[0][0],2)
+        self.bowl_avg = round(self.bowler_ratings2.agg(func.avg(func.col('ratings_overall'))).collect()[0][0],2)
+        self.field_avg = round(self.fielder_ratings2.agg(func.avg(func.col('ratings_overall'))).collect()[0][0],2)
+        self.baseBatScore = 5
+        self.baseBowlScore = 5
+        self.baseFieldScore = 25
 
+    def getPlayerNames(self):
+        playerList = [str(i[1]) for i in self.fielder_ratings2.collect()]
+        playerList.remove("None")
+        playerList.sort()
+        playerList=["Average"]+playerList
+        return playerList
 
-def avg_bat():
-    bat = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath+"batsman.csv"))            #toIntfunc is a function which converts the values to integer.
-    toIntfunc = udf(lambda x: int(x),IntegerType())                                                                         #converting the column "overall" to integer.
-    bat2 = bat.withColumn("overall",toIntfunc(bat['overall']))                                                              #computing the batsman's overall maximum
-    bat_max_overall = int (bat2.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])         #calcuating the overall ratings of every batsman relative to the maximum
-    batsman_ratings = bat2.withColumn('ratings_overall', (bat2.overall / bat_max_overall*100)).sort("overall",ascending=0)  #reading the bowler.csv file
-    batsman_ratings2 = batsman_ratings.withColumn("ratings_overall",toIntfunc(batsman_ratings['ratings_overall']))
-    batsman_avg = batsman_ratings2.agg(func.avg(func.col('ratings_overall')))
-    x = batsman_avg.collect()[0][0]
-    return round(x,2)
-
-
-def avg_bowl():
-    bowl = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath+"bowler.csv"))            #converting the column "overall" to integer.
-    toIntfunc = udf(lambda x: int(x),IntegerType())                                                                         #converting the column "overall" to integer.
-    bowl2 = bowl.withColumn("overall",toIntfunc(bowl['overall']))                                                           #computing the bowler's overall maximum
-    bowl_max_overall = int (bowl2.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])       #calcuating the overall ratings of every bowler relative to the maximum
-    bowler_ratings = bowl2.withColumn('ratings_overall', (bowl2.overall / bowl_max_overall*100)).sort("overall",ascending=0)#converting the new overall ratings to integer.
-    bowler_ratings2 = bowler_ratings.withColumn("ratings_overall",toIntfunc(bowler_ratings['ratings_overall']))
-    bowler_avg = bowler_ratings2.agg(func.avg(func.col('ratings_overall')))
-    x = bowler_avg.collect()[0][0]
-    return round(x,2)
-
-
-def avg_field():
-    fieldDF = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath+"fielder.csv"))          #computing the fielder's overall maximum
-    field2 = fieldDF.dropDuplicates(['fielder','overall','ratings'])                                                          #calcuating the overall ratings of every fielder relative to the maximum
-    field_max_overall = int (fieldDF.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])      #droping the duplicate rows having fielder, overall and ratings common.
-    toIntfunc = udf(lambda x: int(x),IntegerType())                                                                         #converting the column "overall" to integer.
-    fielder_ratings = field2.withColumn('ratings_overall', (fieldDF.overall / field_max_overall*100)).sort("overall",ascending=0) #reading the batsman.csv file
-    fielder_ratings2 = fielder_ratings.withColumn("ratings_overall",toIntfunc(fielder_ratings['ratings_overall']))
-    fielder_avg = fielder_ratings2.agg(func.avg(func.col('ratings_overall')))
-    x = fielder_avg.collect()[0][0]
-    return round(x,2)
-
-
-'''
-create_figure in a method to create the visualization, taking "player" as an argument 
-which would be passed through a dropdown select menu.
-'''
-def create_figure_player_performance(player):
-    fieldDF = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath+"fielder.csv"))          #computing the fielder's overall maximum
-    field_max_overall = int (fieldDF.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])      #droping the duplicate rows having fielder, overall and ratings common.
-    field2 = fieldDF.dropDuplicates(['fielder','overall','ratings'])                                                          #calcuating the overall ratings of every fielder relative to the maximum
-    fielder_ratings = field2.withColumn('ratings_overall', (fieldDF.overall / field_max_overall*100)).sort("overall",ascending=0) #reading the batsman.csv file
-    bat = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath+"batsman.csv"))            #toIntfunc is a function which converts the values to integer.
-    toIntfunc = udf(lambda x: int(x),IntegerType())                                                                         #converting the column "overall" to integer.
-    bat2 = bat.withColumn("overall",toIntfunc(bat['overall']))                                                              #computing the batsman's overall maximum
-    bat_max_overall = int (bat2.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])         #calcuating the overall ratings of every batsman relative to the maximum
-    batsman_ratings = bat2.withColumn('ratings_overall', (bat2.overall / bat_max_overall*100)).sort("overall",ascending=0)  #reading the bowler.csv file
-    bowl = (sql.read.format("com.databricks.spark.csv").option("header", "true").load(data_opath+"bowler.csv"))            #converting the column "overall" to integer.
-    bowl2 = bowl.withColumn("overall",toIntfunc(bowl['overall']))                                                           #computing the bowler's overall maximum
-    bowl_max_overall = int (bowl2.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])       #calcuating the overall ratings of every bowler relative to the maximum
-    bowler_ratings = bowl2.withColumn('ratings_overall', (bowl2.overall / bowl_max_overall*100)).sort("overall",ascending=0)#converting the new overall ratings to integer.
-    bowler_ratings2 = bowler_ratings.withColumn("ratings_overall",toIntfunc(bowler_ratings['ratings_overall']))
-    fielder_ratings2 = fielder_ratings.withColumn("ratings_overall",toIntfunc(fielder_ratings['ratings_overall']))
-    batsman_ratings2 = batsman_ratings.withColumn("ratings_overall",toIntfunc(batsman_ratings['ratings_overall']))
-
-    batsman_name = batsman_ratings2.filter(batsman_ratings2.batsman == player)
-    bowler_name = bowler_ratings2.filter(bowler_ratings2.bowler == player)
-    fielder_name = fielder_ratings2.filter(fielder_ratings2.fielder == player)
-    bat_avg=avg_bat()
-    bowl_avg=avg_bowl()
-    field_avg=avg_field()
-
-    if batsman_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0] is None:
-        bat = bat_avg
-    else:
-        bat = int(batsman_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0])
+    def get_player_batting_rating(self, player):
+        if(player=="Average"):
+            return self.bat_avg
+        batScoreList = self.batsman_ratings2.filter(self.batsman_ratings2.batsman==player).collect()
+        if(len(batScoreList)):
+            batScore = int(batScoreList[0][9])
+        else:
+            batScore = self.baseBatScore
+        return batScore
         
-    if bowler_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0] is None:
-        bowl = bowl_avg
-    else:
-        bowl = int(bowler_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0])
-        
-    if fielder_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0] is None:
-        field = field_avg
-    else:
-        field = int(fielder_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0])
-        
+    def get_player_bowling_rating(self, player):
+        if(player=="Average"):
+            return self.bowl_avg
+        bowlScoreList = self.bowler_ratings2.filter(self.bowler_ratings2.bowler==player).collect()
+        if(len(bowlScoreList)):
+            bowlScore = int(bowlScoreList[0][6])
+        else:
+            bowlScore = self.baseBowlScore
+        return bowlScore
 
-    radar_chart = pygal.Radar(fill=True, style=DefaultStyle)
-    radar_chart.title = 'Player Performance'
-    radar_chart.x_labels = ['Batting', 'Bowling', 'Fielding']
-    radar_chart.y_labels = [0,20,40,60,80,100]
-    radar_chart.add(player, [bat,bowl,field])
-    radar_chart.add('Average', [bat_avg,bowl_avg,field_avg])
-    return radar_chart.render_data_uri()
+    def get_player_fielding_rating(self, player):       
+        if(player=="Average"):
+            return self.field_avg
+        fieldScoreList = self.fielder_ratings2.filter(self.fielder_ratings2.fielder==player).collect()
+        if(len(fieldScoreList)):
+            fieldScore = int(fieldScoreList[0][4])
+        else:
+            fieldScore = self.baseFieldScore
+        return fieldScore
+
+    def create_figure_player_performance(self, player1, player2):
+        radar_chart = pygal.Radar(fill=True, style=DefaultStyle)
+        radar_chart.title = 'Player Performance'
+        radar_chart.x_labels = ['Batting', 'Bowling', 'Fielding']
+        radar_chart.y_labels = [0,20,40,60,80,100]
+        radar_chart.add(player1, [\
+            self.get_player_batting_rating(player1),\
+            self.get_player_bowling_rating(player1),\
+            self.get_player_fielding_rating(player1)])
+        radar_chart.add(player2, [\
+            self.get_player_batting_rating(player2),\
+            self.get_player_bowling_rating(player2),\
+            self.get_player_fielding_rating(player2)])
+        return radar_chart.render_data_uri()
