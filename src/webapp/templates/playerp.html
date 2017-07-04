@@ -1,0 +1,26 @@
+<html>
+<head></head>
+<body>
+<H1>Player Performance</H1>
+
+<form action="/">
+<select name="player">
+	{% for cplayer in player_names %}
+		{% if cplayer == player %}
+			<option selected value="{{ cplayer }}">{{ cplayer }}</option> 
+		{% else %} 
+			<option value="{{ cplayer }}">{{ cplayer }}</option> 
+		{% endif %}
+	{% endfor %}
+</select>
+<input type="submit" value="go">
+</form>
+
+<div id="plot">
+   <embed type="image/svg+xml" src= {{ plot|safe }} width=85% height=85% />
+</div>
+
+</body>
+</html>
+
+
