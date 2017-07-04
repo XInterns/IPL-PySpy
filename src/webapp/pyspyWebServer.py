@@ -11,7 +11,6 @@ lboundList = get_dropdown_list(mdf,"season",1,"int")
 uboundList = get_dropdown_list(mdf,"season",1,"int")
 player_names = get_fielder_ratings2().rdd.map(lambda x: str(x[1])).collect()
 
-
 ########### Index Page ###########
 @app.route("/", methods=["GET"])
 def index():
@@ -79,8 +78,8 @@ def returnPlayerPerformApp():
     plot = create_figure_player_performance(player)
         
     # Embed plot into HTML via Flask Render
-    script, div = components(plot)
-    return render_template("playerperformance.html", script=script, div=div, player_names=player_names, player=player)
+    
+    return render_template("playerperformance.html",plot=plot,player_names=player_names,player=player)
 
 
 @app.route("/seasonOverview/webapp")

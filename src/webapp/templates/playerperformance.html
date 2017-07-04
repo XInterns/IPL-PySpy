@@ -1,34 +1,24 @@
 <html>
-<head>
-<link
-    href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.css"
-    rel="stylesheet" type="text/css">
-<link
-    href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.css"
-    rel="stylesheet" type="text/css">
-
-<script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.js"></script>
-<script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.js"></script>
-
-</head>
+<head></head>
 <body>
 <H1>Player Performance</H1>
 
 <form action="/PlayerPerformance/webapp">
 <select name="player">
-	{% for cplayer in player_names %}
-		{% if cplayer == player %}
-			<option selected value="{{ cplayer }}">{{ cplayer }}</option> 
-		{% else %} 
-			<option value="{{ cplayer }}">{{ cplayer }}</option> 
-		{% endif %}
-	{% endfor %}
+    {% for cplayer in player_names %}
+        {% if cplayer == player %}
+            <option selected value="{{ cplayer }}">{{ cplayer }}</option> 
+        {% else %} 
+            <option value="{{ cplayer }}">{{ cplayer }}</option> 
+        {% endif %}
+    {% endfor %}
 </select>
 <input type="submit" value="go">
 </form>
 
-{{ script|safe }}
-{{ div|safe }}
+<div id="plot">
+   <embed type="image/svg+xml" src= {{ plot|safe }} width=85% height=85% />
+</div>
 
 </body>
 </html>
