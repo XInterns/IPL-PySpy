@@ -1,0 +1,41 @@
+<html>
+<head>
+<body>
+<H1>Team Vs Team Win Percentage</H1>
+<form action="/">
+<select name="team1">
+	{% for team in teams %}
+		{% if team == team1 %}
+			<option selected value="{{ team }}">{{ team }}</option> 
+		{% else %} 
+		<option value="{{ team }}">{{ team }}</option> 
+		{% endif %}
+	{% endfor %}
+</select>
+
+<select name="team2">
+	{% for team in teams %}
+		{% if team == team2 %}
+			<option selected value="{{ team }}">{{ team }}</option> 
+		{% else %} 
+			<option value="{{ team }}">{{ team }}</option> 
+		{% endif %}
+	{% endfor %}
+</select>
+<input type="submit" value="go">
+</form>
+<div id="result">
+   <embed type="image/svg+xml" src= {{ result|safe }} width=85% height=85% />
+</div>
+<p>
+{% if flag == 1 %}
+<h1> same team, choose different teams!</h1>
+{% endif %}
+</p>
+<p>
+{% if flag2 == 1 %}
+<h1> No matches played before!</h1>
+{% endif %}
+</p>
+</body>
+</html>
