@@ -8,7 +8,7 @@ An internship project that provides various insights, and analysis, through visu
 * [Pyspark 2.1.1](https://spark.apache.org/downloads.html)
 * [Bokeh 0.12.5](http://bokeh.pydata.org/en/latest/)
 * [Flask 0.12.2](https://pypi.python.org/pypi/Flask/0.12.2)
-* [Pygal 2.3.1](http://pygal.org/en/stable/installing.html)
+* [Pygal 2.4.0](http://pygal.org/en/stable/installing.html)
 
 ## How to run
 * Execute run.sh
@@ -26,7 +26,7 @@ An internship project that provides various insights, and analysis, through visu
 * [Kaggle IPL Dataset](https://www.kaggle.com/manasgarg/ipl)
 
 ## Track Progress
-  [Trello](https://trello.com/b/xMd8BeIs/pyspy-weekwise)
+* [Trello](https://trello.com/b/xMd8BeIs/pyspy-weekwise)
 
 ## License
 #### MIT
