@@ -186,20 +186,26 @@ def create_figure_performance_consistency(srcDF, season_lbound = 2008, season_ub
     resultDF = filter_using_constraints(resultDF, constraints_list)
     resultDF = calc_consistency(resultDF)
 
-    resultpDF = resultDF.toPandas()
-    clr = get_color_list("RdYlGn", resultDF.count())
+    # resultpDF = resultDF.toPandas()
+    # clr = get_color_list("RdYlGn", resultDF.count())
 
-    figurePerformanceConsistency = Bar(resultpDF,\
-            values="Consistency",\
-            color="Teams", palette=clr,\
-            label=cat(columns="Teams", sort=False),\
-            xlabel="Teams", ylabel="Win Consistency %age",\
-            title="IPL Performance Consistencies "\
-            +str(season_lbound)+"-"+str(season_ubound),
-            legend='top_right', plot_width=950, bar_width=0.6)
+    # figurePerformanceConsistency = Bar(resultpDF,\
+    #         values="Consistency",\
+    #         color="Teams", palette=clr,\
+    #         label=cat(columns="Teams", sort=False),\
+    #         xlabel="Teams", ylabel="Win Consistency %age",\
+    #         title="IPL Performance Consistencies "\
+    #         +str(season_lbound)+"-"+str(season_ubound),
+    #         legend='top_right', plot_width=950, bar_width=0.6)
 
-    figurePerformanceConsistency.y_range = Range1d(60,100)
-    return figurePerformanceConsistency
+    # figurePerformanceConsistency.y_range = Range1d(60,100)
+    # return figurePerformanceConsistency
+    gauge = pygal.SolidGauge(inner_radius=0.70)
+    percent_formatter = lambda x: '{:.10g}%'.format(x)
+    gauge.value_formatter = percent_formatter
+    for row in resultDF.collect():
+        gauge.add(str(row[0]), [{'value': round(row[1],2), 'max_value': 100}])
+    return gauge.render_data_uri()
 
 
 ########### PlayerPerformance Module ###########

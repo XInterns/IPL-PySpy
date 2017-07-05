@@ -146,11 +146,14 @@ def returnPerformanceConsistencyWebApp():
     plot = create_figure_performance_consistency(matchDF, lbound, ubound)
 
     # Embed plot into HTML via Flask Render
-    script, div = components(plot)
-    return render_template("performanceConsistency.html",\
-            script=script, div=div, lboundList=lboundList,\
-            uboundList=uboundList, lbound=lbound,\
-            ubound=ubound)
+    # script, div = components(plot)
+    # return render_template("performanceConsistency.html",\
+    #         script=script, div=div, lboundList=lboundList,\
+    #         uboundList=uboundList, lbound=lbound,\
+    #         ubound=ubound)
+    return render_template("performanceConsistency.html", plot=plot,\
+            lboundList=lboundList,uboundList=uboundList,\
+            lbound=lbound,ubound=ubound)
 
 
 if __name__ == "__main__":

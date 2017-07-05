@@ -1,6 +1,6 @@
 <html>
 <head>
-<link
+<!-- <link
     href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.css"
     rel="stylesheet" type="text/css">
 <link
@@ -9,7 +9,7 @@
 
 <script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.js"></script>
 <script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.js"></script>
-
+ -->
 </head>
 <body>
 <H1>Team Performance Consistency</H1>
@@ -36,9 +36,14 @@
 <input type="submit" value="Calc Performance Consistency">
 </form>
 
-{{ script|safe }}
-{{ div|safe }}
 
+<div id="plot">
+   <embed type="image/svg+xml" src= {{ plot|safe }} width=75% height=75% />
+</div>
+
+<!-- {{ script|safe }}
+{{ div|safe }}
+ -->
 </body>
 </html>
 
