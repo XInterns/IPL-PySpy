@@ -59,8 +59,8 @@ def plotit(first_team,second_team):
 
 teams = ['Rajasthan Royals','Chennai Super Kings','Deccan Chargers','Gujarat Lions','Delhi Daredevils','Mumbai Indians','Kochi Tuskers Kerala','Royal Challengers Bangalore','Pune Warriors','Rising Pune Supergiants','Sunrisers Hyderabad','Kolkata Knight Riders','Kings XI Punjab']
 
-@app.route('/')
-def index():
+@app.route("/TeamVsTeamWinPercentage/webapp")
+def returnTeamVsTeamWinPercentageApp():
 	# Determine the selected feature
 	flag=0
 	flag2=0
@@ -80,7 +80,7 @@ def index():
 		if result == None:
 			flag2=1
 		
-	return render_template("teamPygal.html",result=result,team1=team1,team2=team2,teams=teams,flag=flag,flag2=flag2)
+	return render_template("teamVsTeamWinPercentage.html",result=result,team1=team1,team2=team2,teams=teams,flag=flag,flag2=flag2)
 
 
 if __name__ == '__main__':

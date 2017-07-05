@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from src.webapp.corefuncs import *
 
 import pygal    
-from pygal.style import DefaultStyle
+from pygal.style import DefaultStyle, LightGreenStyle
 
 from bokeh.charts import Bar            # creating bar charts, and displaying it
 from bokeh.charts.attributes import cat                            # extracting column for 'label' category in bar charts
@@ -286,3 +286,43 @@ class PlayerPerformance(object):
             self.get_player_bowling_rating(player2),\
             self.get_player_fielding_rating(player2)])
         return radar_chart.render_data_uri()
+
+########### Team Vs Team Win Percentage Module ###########
+def create_figure_team_vs_team_win_percentage(srcDF, first_team,second_team):
+    team_winner = srcDF.select(srcDF.team1,srcDF.team2,srcDF.winner)
+    if first_team != second_team:
+        team1_= team_winner.filter(team_winner.team1 == first_team)
+        team11_ = team_winner.filter(team_winner.team2 == first_team)
+        team2_= team1_.filter(team1_.team2 == second_team)
+        team22_ = team11_.filter(team11_.team1 == second_team)
+
+        winners1_ = team2_.filter(team2_.winner == first_team)#checking the matches won by the first_team
+        winners11_ = team22_.filter(team22_.winner == first_team)
+        winners2_ = team2_.filter(team2_.winner == second_team)  #checking the matches won by the second_team
+        winners22_ = team22_.filter(team22_.winner == second_team)
+
+
+        #number of matches won by first team
+        first_team_win = winners1_.count()
+        first_team_win2 = winners11_.count()
+        
+        #number of matches won by second team
+        second_team_win = winners2_.count()
+        second_team_win2 = winners22_.count()        
+
+
+        total_matches = team22_.count() + team2_.count() #taking the count of total number of matches
+
+        if first_team_win+second_team_win+first_team_win2+second_team_win2 != total_matches:    #checking for any matches without any result
+            total_matches = total_matches - (total_matches -(first_team_win + second_team_win + first_team_win2 + second_team_win2))  #calculating new total matches played with significant result
+
+        if total_matches != 0:  #checking if the teams ever played a match between each other
+            first_team_percent = ((first_team_win + first_team_win2) * 100)/float(total_matches) #calculating the percentage win for first team
+            second_team_percent = ((second_team_win + second_team_win2) * 100)/float(total_matches) #calculating the percentage win for second team
+            pie_chart = pygal.Pie(style=LightGreenStyle)
+            percent_formatter = lambda x: '{:.10g}%'.format(x)
+            pie_chart.value_formatter = percent_formatter
+            pie_chart.title = 'Team Vs Team Win Prediction(in %)'
+            pie_chart.add(first_team,round(first_team_percent,2))
+            pie_chart.add(second_team,round(second_team_percent,2))
+            return pie_chart.render_data_uri()

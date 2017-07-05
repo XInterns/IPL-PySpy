@@ -11,6 +11,7 @@ seasonList = get_dropdown_list(matchDF,"season",1,"int")
 lboundList = get_dropdown_list(matchDF,"season",1,"int")
 uboundList = get_dropdown_list(matchDF,"season",1,"int")
 player_names = playerPerformanceObj.getPlayerNames()
+teams = ['Rajasthan Royals','Chennai Super Kings','Deccan Chargers','Gujarat Lions','Delhi Daredevils','Mumbai Indians','Kochi Tuskers Kerala','Royal Challengers Bangalore','Pune Warriors','Rising Pune Supergiants','Sunrisers Hyderabad','Kolkata Knight Riders','Kings XI Punjab']
 
 
 ########### Index Page ###########
@@ -154,6 +155,30 @@ def returnPerformanceConsistencyWebApp():
     return render_template("performanceConsistency.html", plot=plot,\
             lboundList=lboundList,uboundList=uboundList,\
             lbound=lbound,ubound=ubound)
+
+
+@app.route("/TeamVsTeamWinPercentage/webapp")
+def returnTeamVsTeamWinPercentageApp():
+    # Determine the selected feature
+    flag=0
+    flag2=0
+    result=None
+    team1= request.args.get("team1")
+    if team1 == None:
+        team1 = "Rajasthan Royals"
+
+    team2= request.args.get("team2")
+    if team2 == None:
+        team2 = "Delhi Daredevils"
+
+    if(team1==team2):
+        flag=1
+    else:
+        result = create_figure_team_vs_team_win_percentage(matchDF,team1,team2)
+        if result == None:
+            flag2=1
+        
+    return render_template("teamVsTeamWinPercentage.html",result=result,team1=team1,team2=team2,teams=teams,flag=flag,flag2=flag2)
 
 
 if __name__ == "__main__":
