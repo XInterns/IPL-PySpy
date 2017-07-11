@@ -327,3 +327,78 @@ def create_figure_team_vs_team_win_percentage(srcDF, first_team,second_team):
             pie_chart.add(first_team,round(first_team_percent,2))
             pie_chart.add(second_team,round(second_team_percent,2))
             return pie_chart.render_data_uri()
+
+
+########### Dream Team Module ###########
+def create_team(season1,season2):
+    teamDF = (sql.read.format("com.databricks.spark.csv").\
+            option("header","true").load(data_opath + "dreamTeam" + season1+"_"+season2+".csv"))
+    yaxis = [str(x) for x in range(1, 7)]
+    xaxis = ["a","b"]
+    player=[str(i.name) for i in teamDF.collect()]
+    batsman_overall=[int(i.batsmanrating) for i in teamDF.collect()]
+    bowler_overall=[int(i.bowlerrating) for i in teamDF.collect()]
+    fielder_overall=[int(i.fielderrating) for i in teamDF.collect()]
+    strikerate=[float(i.strikerate) for i in teamDF.collect()]
+    economyrate=[float(i.economyrate) for i in teamDF.collect()]
+    ycoordinate =["Batsman","Batsman","Batsman","Batsman","Batsman",\
+        "Batsman","Bowler","Bowler","Bowler","Bowler","Bowler"]
+
+    colormap = {
+        
+        "Batsman"      : "#0092CD",
+        "Bowler"       : "#4FC730",
+        
+    }
+
+    source = ColumnDataSource(
+        data=dict(
+            role = [i for i in ycoordinate],
+            xpoints = ["a","a","a","a","a","a","b","b","b","b","b"],
+            ypoints = [2,3,4,5,6,1,6,5,4,3,2],
+            player = [i for i in player],
+            batscore = [i for i in batsman_overall],
+            bowlscore = [i if i != 0 else 2 for i in bowler_overall],
+            fieldscore = [i for i in fielder_overall],
+            srate = [i if i!= 100.0 else "NA" for i in strikerate],
+            erate = [i if i!= 100.0 else "NA" for i in economyrate],
+            type_color = [colormap[x] for x in ycoordinate],
+        )
+    )
+
+    p = figure(title = "Dream Team", x_range = xaxis, y_range = list(reversed(yaxis)), tools ="hover")
+    p.plot_width = 800
+    p.plot_height = 500
+    p.toolbar_location = None
+    p.outline_line_color = None
+    p.axis.visible = False
+
+    rect = Rect(x="xpoints", y="ypoints", width=0.9, height=0.9, fill_color="type_color")
+    rect_render = p.add_glyph(source, rect)
+
+    legend = Legend(items=[LegendItem(label=field("role"), renderers=[rect_render])])
+    p.add_layout(legend, 'right')
+
+    text_props = {
+        "source": source,
+        "angle": 0,
+        "color": "black",
+        "text_align": "center",
+        "text_baseline": "middle",
+    }
+
+    p.text(x="xpoints", y="ypoints", text="player",
+           text_font_style="bold", text_font_size="12pt", **text_props)
+
+    p.grid.grid_line_color = None
+
+    p.select_one(HoverTool).tooltips = [
+        ("player","@player"),
+        ("role","@role"),
+        ("batting","@batscore"),
+        ("bowling","@bowlscore"),
+        ("fielding","@fieldscore"),
+        ("strikerate","@srate"),
+        ("economyrate","@erate")
+    ]
+    return p

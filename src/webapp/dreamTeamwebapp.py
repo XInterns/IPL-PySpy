@@ -10,16 +10,11 @@ from bokeh.core.properties import field
 
 app = Flask(__name__)
 sc = SparkContext()
-
 sql = SQLContext(sc)
-# def create_team(season1,season2):
-#     teamDF = (sql.read.format("com.databricks.spark.csv").\
-#             option("header","true").load(data_opath + "dreamTeam" + season1+"_"+season2+".csv"))
 
 def create_team(season1,season2):
     teamDF = (sql.read.format("com.databricks.spark.csv").\
-            option("header","true").load("dreamTeam" + season1+"_"+season2+".csv"))
-
+            option("header","true").load(data_opath + "dreamTeam" + season1+"_"+season2+".csv"))
     yaxis = [str(x) for x in range(1, 7)]
     xaxis = ["a","b"]
     player=[str(i.name) for i in teamDF.collect()]

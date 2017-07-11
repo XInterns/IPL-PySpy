@@ -10,6 +10,7 @@ playerPerformanceObj = PlayerPerformance()
 seasonList = get_dropdown_list(matchDF,"season",1,"int")
 lboundList = get_dropdown_list(matchDF,"season",1,"int")
 uboundList = get_dropdown_list(matchDF,"season",1,"int")
+year_list = get_dropdown_list(matchDF,"season",1,"string")
 player_names = playerPerformanceObj.getPlayerNames()
 teams = ['Rajasthan Royals','Chennai Super Kings','Deccan Chargers','Gujarat Lions','Delhi Daredevils','Mumbai Indians','Kochi Tuskers Kerala','Royal Challengers Bangalore','Pune Warriors','Rising Pune Supergiants','Sunrisers Hyderabad','Kolkata Knight Riders','Kings XI Punjab']
 
@@ -25,6 +26,7 @@ def index():
 def returnOverallStandingsHelp():
 	return render_template("overallRanksHelp.html")
 
+
 @app.route("/performanceConsistency/help", methods=["GET"])
 def returnPerformanceConsistenciesHelp():
 	return render_template("performanceConsistencyHelp.html")
@@ -38,6 +40,12 @@ def returnTeamVsTeamWinPercentageHelp():
 @app.route("/PlayerPerformance/help", methods=["GET"])
 def returnPlayerPerformanceHelp():
 	return render_template("playerperformanceHelp.html")
+
+
+@app.route("/DreamTeam/help", methods=["GET"])
+def returnDreamTeamHelp():
+    return render_template("dreamteamHelp.html")
+
 
 @app.route("/overallStandings", methods=["GET"])
 def returnOverallStandings():
@@ -67,6 +75,15 @@ def returnPlayerPerformance():
 	args = request.args
 	player = args['player']
 	return jsonify({"Player_Performance_"+player: Player_Performance_jsonify(player)})
+
+
+@app.route("/DreamTeam", methods=["GET"])
+def returnDreamTeam():
+    args = request.args
+    season1 = args['season1']
+    season2 = args['season2']
+    return jsonify({"Dream_Team_"+str(season1)+"_"+str(season2): dream_team_jsonify(season1, season2)})
+
 
 ########### WebApp Routing & Functionality ###########
 @app.route("/PlayerPerformance/webapp")
@@ -179,6 +196,33 @@ def returnTeamVsTeamWinPercentageApp():
             flag2=1
         
     return render_template("teamVsTeamWinPercentage.html",result=result,team1=team1,team2=team2,teams=teams,flag=flag,flag2=flag2)
+
+
+@app.route('/DreamTeam/webapp')
+def returnDreamTeamWebApp():
+
+    lbound= request.args.get("lbound")
+    ubound= request.args.get("ubound")
+    if lbound == None:
+       lbound = "2008"
+    
+    if ubound == None:
+        ubound = "2016"
+
+    lseason = int(lbound)
+    useason = int(ubound)
+    if(lseason > useason):
+        lseason^=useason
+        useason^=lseason
+        lseason^=useason
+    lbound = str(lseason)
+    ubound = str(useason)
+    
+    plot = create_team(lbound,ubound)
+        
+
+    script, div = components(plot)
+    return render_template("dreamteam.html", script=script, div=div, year_list=year_list,lbound=lbound,ubound=ubound)
 
 
 if __name__ == "__main__":

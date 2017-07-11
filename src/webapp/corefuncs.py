@@ -33,8 +33,10 @@ def dtype_cast(data, dtype):
         return long(data)
     elif dtype == "date":
         return parse(data).date()
+    elif dtype == "string":
+        return str(data)
     else:
-        print dtype
+        return dtype
 
 def get_color_list(paletteName,numRows):
     return all_palettes[paletteName][numRows]
@@ -118,7 +120,6 @@ def consistency_jsonify(srcDF, season_lbound = 2008, season_ubound = 2016):
     return toJsonObj(result_DF)
 
 
-
 ########### Team Vs Team Win Percentage Module ###########
 def get_winnerDF(srcDF):
     return srcDF.select(srcDF.team1,srcDF.team2,srcDF.winner)
@@ -160,6 +161,16 @@ def team_vs_team_jsonify(srcDF, team1, team2):
             team1_percent = ((team1_win + team1_win2) * 100)/float(total_matches) #calculating the percentage win for first team
             team2_percent = ((team2_win + team2_win2) * 100)/float(total_matches) #calculating the percentage win for second team
             return jsonify_Percents(team1, team2, team1_percent, team2_percent)
+
+
+########### Dream Team Module ###########
+def dream_team_jsonify(season1 = 2008, season2 = 2016):
+    teamDF = (sql.read.format("com.databricks.spark.csv").\
+            option("header","true").load(data_opath + "dreamTeam" + season1+"_"+season2+".csv"))
+    teamDF.printSchema()
+    teamDF = teamDF.drop('_c0')
+    teamDF.printSchema()
+    return toJsonObj(teamDF)
 
 
 
