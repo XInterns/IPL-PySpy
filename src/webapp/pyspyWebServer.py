@@ -34,7 +34,7 @@ def returnPerformanceConsistenciesHelp():
 
 @app.route("/TeamVsTeamWinPercentage/help", methods=["GET"])
 def returnTeamVsTeamWinPercentageHelp():
-	return render_template("teamVsTeamWinPercentage.html")
+	return render_template("teamVsTeamWinPercentageHelp.html")
 
 
 @app.route("/PlayerPerformance/help", methods=["GET"])
