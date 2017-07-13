@@ -167,9 +167,7 @@ def team_vs_team_jsonify(srcDF, team1, team2):
 def dream_team_jsonify(season1 = 2008, season2 = 2016):
     teamDF = (sql.read.format("com.databricks.spark.csv").\
             option("header","true").load(data_opath + "dreamTeam" + season1+"_"+season2+".csv"))
-    teamDF.printSchema()
     teamDF = teamDF.drop('_c0')
-    teamDF.printSchema()
     return toJsonObj(teamDF)
 
 
@@ -246,17 +244,17 @@ def Player_Performance_jsonify(player):
     fielder_name = fielder_ratings2.filter(fielder_ratings2.fielder == player)
 
     if batsman_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0] is None:
-        bat = 10
+        bat = 5
     else:
         bat = int(batsman_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0])
         
     if bowler_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0] is None:
-        bowl = 5
+        bowl = 2
     else:
         bowl = int(bowler_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0])
         
     if fielder_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0] is None:
-        field = 25
+        field = 5
     else:
         field = int(fielder_name.describe(['ratings_overall']).filter("summary == 'max'").select('ratings_overall').collect()[0][0])
     
