@@ -193,51 +193,22 @@ def Player_Performance_jsonify(player):
     batc = get_batDF()
     bowlc = get_bowlDF()
     fieldc = get_fieldDF()
-
-    field_max_overall = int(fieldc.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])
-
-    #droping the duplicate rows having fielder, overall and ratings common.
-
-    field2 = fieldc.dropDuplicates(['fielder','overall','ratings'])
-
-    #calcuating the overall ratings of every fielder relative to the maximum
-
-    fielder_ratings = field2.withColumn('ratings_overall', (fieldc.overall / field_max_overall*100)).sort("overall",ascending=0)
-
-    #toIntfunc is a function which converts the values to integer.
-
-    toIntfunc = udf(lambda x: int(x),IntegerType())
-
-    #converting the column "overall" to integer.
-
-    bat2 = batc.withColumn("overall",toIntfunc(batc['overall']))
-
-    #computing the batsman's overall maximum
-
-    bat_max_overall = int (bat2.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])
-
-    #calcuating the overall ratings of every batsman relative to the maximum
-
-    batsman_ratings = bat2.withColumn('ratings_overall', (bat2.overall / bat_max_overall*100)).sort("overall",ascending=0)
-
-    #converting the column "overall" to integer.
-
-    bowl2 = bowlc.withColumn("overall",toIntfunc(bowlc['overall']))
-
-    #computing the bowler's overall maximum
-
-    bowl_max_overall = int (bowl2.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])
-
-    #calcuating the overall ratings of every bowler relative to the maximum
-
-    bowler_ratings = bowl2.withColumn('ratings_overall', (bowl2.overall / bowl_max_overall*100)).sort("overall",ascending=0)
-
-    #converting the new overall ratings to integer.
-
+    toIntfunc = udf(lambda x: int(x),IntegerType()) 
+    fieldc = fieldc.withColumn("overall",toIntfunc(fieldc['overall']))
+    field_max_overall = int(fieldc.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])      #droping the duplicate rows having fielder, overall and ratings common.
+    field2 = fieldc.dropDuplicates(['fielder','overall','ratings'])                                                          #calcuating the overall ratings of every fielder relative to the maximum
+    fielder_ratings = field2.withColumn('ratings_overall', ((fieldc.overall*100)/field_max_overall)).sort("overall",ascending=0) #reading the batsman.csv file
+    
+    bat2 = batc.withColumn("overall",toIntfunc(batc['overall']))                                                              #computing the batsman's overall maximu
+    bat_max_overall = int (bat2.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])         #calcuating the overall ratings of every batsman relative to the maximum
+    batsman_ratings = bat2.withColumn('ratings_overall', ((bat2.overall*100) / bat_max_overall)).sort("overall",ascending=0)  #reading the bowler.csv file
+    
+    bowl2 = bowlc.withColumn("overall",toIntfunc(bowlc['overall']))                                                           #computing the bowler's overall maximum
+    bowl_max_overall = int (bowl2.describe(['overall']).filter("summary == 'max'").select('overall').collect()[0][0])       #calcuating the overall ratings of every bowler relative to the maximum
+    bowler_ratings = bowl2.withColumn('ratings_overall', ((bowl2.overall*100) / bowl_max_overall)).sort("overall",ascending=0)#converting the new overall ratings to integer.
     bowler_ratings2 = bowler_ratings.withColumn("ratings_overall",toIntfunc(bowler_ratings['ratings_overall']))
     fielder_ratings2 = fielder_ratings.withColumn("ratings_overall",toIntfunc(fielder_ratings['ratings_overall']))
     batsman_ratings2 = batsman_ratings.withColumn("ratings_overall",toIntfunc(batsman_ratings['ratings_overall']))
-
 
     batsman_name = batsman_ratings2.filter(batsman_ratings2.batsman == player)
     bowler_name = bowler_ratings2.filter(bowler_ratings2.bowler == player)
